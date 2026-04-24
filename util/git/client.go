@@ -1226,25 +1226,33 @@ func (m *nativeGitClient) AddAndPushNote(sha string, namespace string, note stri
 	return nil
 }
 
-// HasFileChanged returns the outout of git diff considering whether it is tracked or un-tracked
+// HasFileChanged returns the output of git diff considering whether it is tracked or un-tracked
 func (m *nativeGitClient) HasFileChanged(filePath string) (bool, error) {
-	// Step 1: Is it UNTRACKED? (file is new to git)
-	_, err := m.runCmd(context.Background(), "ls-files", "--error-unmatch", filePath)
-	if err != nil {
-		// File is NOT tracked by git → means it's new/unadded
-		return true, nil
-	}
-	// use git diff --quiet and check exit code .. --cached is to consider files staged for deletion
-	_, err = m.runCmd(context.Background(), "diff", "--quiet", "--", filePath)
+	// check whether there are any untracked changes at the given path
+	_, err := m.runCmd(context.Background(), "ls-files", "--error-unmatch", "--others", filePath)
 	if err == nil {
-		return false, nil // No changes
-	}
-	// Exit code 1 indicates: changes found
-	if strings.Contains(err.Error(), "exit status 1") {
+		// untracked files found
 		return true, nil
 	}
-	// always return the actual wrapped error
-	return false, fmt.Errorf("git diff failed: %w", err)
+	if !strings.Contains(err.Error(), "exit status 1") {
+		// handle errors other than exit code 1
+		// exit code 1 is expected in case there are no new files
+		return false, fmt.Errorf("git ls-files failed: %w", err)
+	}
+
+	// check whether there is a diff in existing file(s)
+	_, err = m.runCmd(context.Background(), "diff", "--quiet", filePath)
+	if err == nil {
+		return false, nil
+	}
+	if !strings.Contains(err.Error(), "exit status 1") {
+		// handle errors other than exit code 1
+		// exit code 1 is expected in case there is diff files
+		return false, fmt.Errorf("git diff failed: %w", err)
+	}
+
+	// diff found
+	return true, nil
 }
 
 // runWrapper runs a custom command with all the semantics of running the Git client

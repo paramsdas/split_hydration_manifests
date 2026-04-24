@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
@@ -25,6 +26,14 @@ var sprigFuncMap = sprig.GenericFuncMap() // a singleton for better performance
 
 const gitAttributesContents = `**/README.md linguist-generated=true
 **/hydrator.metadata linguist-generated=true`
+
+type manifestMetadata struct {
+	Kind     string `json:"kind"`
+	Metadata struct {
+		Namespace string `json:"namespace,omitempty"`
+		Name      string `json:"name"`
+	} `json:"metadata"`
+}
 
 func init() {
 	// Avoid allowing the user to learn things about the environment.
@@ -68,12 +77,13 @@ func WriteForPaths(root *os.Root, repoUrl, drySha string, dryCommitMetadata *app
 		}
 
 		// Write the manifests
-		err := writeManifests(root, hydratePath, p.Manifests)
+		// err := writeManifests(root, hydratePath, p.Manifests)
+		err := writeSplitManifests(root, hydratePath, p.Manifests)
 		if err != nil {
 			return false, fmt.Errorf("failed to write manifests: %w", err)
 		}
 		// Check if the manifest file has been modified compared to the git index
-		changed, err := gitClient.HasFileChanged(filepath.Join(hydratePath, ManifestYaml))
+		changed, err := gitClient.HasFileChanged(hydratePath)
 		if err != nil {
 			return false, fmt.Errorf("failed to check if anything changed on the manifest: %w", err)
 		}
@@ -176,6 +186,110 @@ func writeGitAttributes(root *os.Root) error {
 
 // writeManifests writes the manifests to the manifest.yaml file, truncating the file if it exists and appending the
 // manifests in the order they are provided.
+func writeSplitManifests(root *os.Root, dirPath string, manifests []*apiclient.HydratedManifestDetails) error {
+	// If the file exists, truncate it.
+	// No need to use SecureJoin here, as the path is already sanitized.
+	manifestsDirectoryPath := filepath.Join(dirPath, ManifestsDirectory)
+
+	err := ensureDirectoryExists(root, manifestsDirectoryPath, true)
+	if err != nil {
+		return fmt.Errorf("failed to ensure that directory exists: %w", err)
+	}
+
+	for _, m := range manifests {
+		log.Info("processing manifest: %s", m.ManifestJSON)
+
+		// collect required metadata
+		metaObj := &manifestMetadata{}
+		err = json.Unmarshal([]byte(m.ManifestJSON), metaObj)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal manifest: %w", err)
+		}
+
+		// prepare subdirectory
+		subdirectory := "_unnamespaced"
+		if metaObj.Metadata.Namespace != "" {
+			subdirectory = metaObj.Metadata.Namespace
+		}
+		namespaceDirectoryPath := filepath.Join(manifestsDirectoryPath, subdirectory)
+		err = ensureDirectoryExists(root, namespaceDirectoryPath, false)
+
+		// prepare and write manifest
+		manifestName := fmt.Sprintf("%s-%s.yaml", strings.ToLower(metaObj.Kind), metaObj.Metadata.Name)
+		manifestPath := filepath.Join(namespaceDirectoryPath, manifestName)
+		err = writeManifestToFile(root, m.ManifestJSON, manifestPath)
+	}
+	return nil
+}
+
+func ensureDirectoryExists(root *os.Root, directoryPath string, recreate bool) error {
+	_, err := root.Stat(directoryPath)
+	// return errors other than file not found
+	if err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("failed to stat directory: %w", err)
+	}
+
+	// if the directory exists and recreate flag is set, remove it so it is recreated
+	if recreate {
+		if err == nil {
+			err = root.RemoveAll(directoryPath)
+			if err != nil {
+				return fmt.Errorf("failed to removed directory: %w", err)
+			}
+		}
+	}
+
+	err = root.Mkdir(directoryPath, os.ModePerm)
+	// return an error if mkdir crashed despite the directory being non-existent
+	if err != nil && os.IsNotExist(err) {
+		return fmt.Errorf("failed to create directory: %w", err)
+	}
+
+	return nil
+}
+
+func writeManifestToFile(root *os.Root, manifest string, filePath string) error {
+	_, err := root.Stat(filePath)
+
+	// return error if file already exists (collision)
+	if err == nil {
+		return fmt.Errorf("identified collision for manifest %s", filePath);
+	}
+
+	if !os.IsNotExist(err) {
+		return fmt.Errorf("failed to stat directory: %w", err)
+	}
+
+	file, err := root.OpenFile(filePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("failed to open manifest file %s: %w", filePath, err)
+	}
+
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.WithError(err).Error("failed to close file")
+		}
+	}()
+
+	obj := &unstructured.Unstructured{}
+	err = json.Unmarshal([]byte(manifest), obj)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal manifest: %w", err)
+	}
+
+	enc := yaml.NewEncoder(file)
+
+	err = enc.Encode(&obj.Object)
+	if err != nil {
+		return fmt.Errorf("failed to encode manifest: %w", err)
+	}
+
+	return nil
+}
+
+// writeManifests writes the manifests to the manifest.yaml file, truncating the file if it exists and appending the
+// manifests in the order they are provided.
 func writeManifests(root *os.Root, dirPath string, manifests []*apiclient.HydratedManifestDetails) error {
 	// If the file exists, truncate it.
 	// No need to use SecureJoin here, as the path is already sanitized.
@@ -202,6 +316,7 @@ func writeManifests(root *os.Root, dirPath string, manifests []*apiclient.Hydrat
 	enc.SetIndent(2)
 
 	for _, m := range manifests {
+		log.Info("processing manifest: %s", m.ManifestJSON)
 		obj := &unstructured.Unstructured{}
 		err = json.Unmarshal([]byte(m.ManifestJSON), obj)
 		if err != nil {

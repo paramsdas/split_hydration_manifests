@@ -20,6 +20,7 @@ import (
 const (
 	NoteNamespace = "hydrator.metadata" // NoteNamespace is the custom git notes namespace used by the hydrator to store and retrieve commit-related metadata.
 	ManifestYaml  = "manifest.yaml"     // ManifestYaml constant for the manifest yaml
+	ManifestsDirectory = "manifests/"
 )
 
 // Service is the service that handles commit requests.
