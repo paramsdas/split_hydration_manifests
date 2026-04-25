@@ -187,11 +187,17 @@ func writeGitAttributes(root *os.Root) error {
 // writeManifests writes the manifests to the manifest.yaml file, truncating the file if it exists and appending the
 // manifests in the order they are provided.
 func writeSplitManifests(root *os.Root, dirPath string, manifests []*apiclient.HydratedManifestDetails) error {
-	// If the file exists, truncate it.
-	// No need to use SecureJoin here, as the path is already sanitized.
+	// clean up existing manifest yaml file
+	manifestYamlPath := filepath.Join(dirPath, ManifestYaml)
+	err := root.Remove(manifestYamlPath)
+	// return errors other than file not found
+	if err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("failed to clean up manifest.yaml: %w", err)
+	}
+
 	manifestsDirectoryPath := filepath.Join(dirPath, ManifestsDirectory)
 
-	err := ensureDirectoryExists(root, manifestsDirectoryPath, true)
+	err = ensureDirectoryExists(root, manifestsDirectoryPath, true)
 	if err != nil {
 		return fmt.Errorf("failed to ensure that directory exists: %w", err)
 	}
