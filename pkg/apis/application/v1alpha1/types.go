@@ -422,6 +422,9 @@ func (s SourceHydrator) GetSyncSource() ApplicationSource {
 		RepoURL:        s.DrySource.RepoURL,
 		Path:           s.SyncSource.Path,
 		TargetRevision: s.SyncSource.TargetBranch,
+		Directory: &ApplicationSourceDirectory{
+			Recurse: true,
+		},
 	}
 }
 
