@@ -224,6 +224,9 @@ func writeSplitManifests(root *os.Root, dirPath string, manifests []*apiclient.H
 		manifestName := fmt.Sprintf("%s-%s.yaml", strings.ToLower(metaObj.Kind), metaObj.Metadata.Name)
 		manifestPath := filepath.Join(namespaceDirectoryPath, manifestName)
 		err = writeManifestToFile(root, m.ManifestJSON, manifestPath)
+		if err != nil {
+			return fmt.Errorf("failed to write manifest: %w", err)
+		}
 	}
 	return nil
 }
