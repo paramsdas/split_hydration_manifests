@@ -403,6 +403,14 @@ const (
 	ApplicationSourceTypePlugin    ApplicationSourceType = "Plugin"
 )
 
+// Hydrationformat specifies how the hydrated manifests are formatted before being committed to git
+// type HydrationFormat string
+
+const (
+	HydrationFormatSimple string = "simple"
+	HydrationFormatSplit  string = "split"
+)
+
 // SourceHydrator specifies a dry "don't repeat yourself" source for manifests, a sync source from which to sync
 // hydrated manifests, and an optional hydrateTo location to act as a "staging" aread for hydrated manifests.
 type SourceHydrator struct {
@@ -413,6 +421,11 @@ type SourceHydrator struct {
 	// HydrateTo specifies an optional "staging" location to push hydrated manifests to. An external system would then
 	// have to move manifests to the SyncSource, e.g. by pull request.
 	HydrateTo *HydrateTo `json:"hydrateTo,omitempty" protobuf:"bytes,3,opt,name=hydrateTo"`
+	// Hydrationformat specifies how the hydrated manifests are formatted before being committed to git
+	//
+	//+kubebuilder:default:=simple
+	//+kubebuilder:validation:Enum=simple;split
+	HydrationFormat string `json:"hydrationFormat,omitempty" protobuf:"bytes,4,opt,name=hydrationFormat"`
 }
 
 // GetSyncSource gets the source from which we should sync when a source hydrator is configured.

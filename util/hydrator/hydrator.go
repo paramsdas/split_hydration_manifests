@@ -13,11 +13,12 @@ import (
 // HydratorCommitMetadata defines the struct used by both Controller and commitServer
 // to define the templated commit message and the hydrated manifest
 type HydratorCommitMetadata struct {
-	RepoURL  string   `json:"repoURL,omitempty"`
-	DrySHA   string   `json:"drySha,omitempty"`
-	Commands []string `json:"commands,omitempty"`
-	Author   string   `json:"author,omitempty"`
-	Date     string   `json:"date,omitempty"`
+	RepoURL         string   `json:"repoURL,omitempty"`
+	DrySHA          string   `json:"drySha,omitempty"`
+	Commands        []string `json:"commands,omitempty"`
+	Author          string   `json:"author,omitempty"`
+	Date            string   `json:"date,omitempty"`
+	HydrationFormat string   `json:"hydrationFormat,omitempty"`
 	// Subject is the subject line of the DRY commit message, i.e. `git show --format=%s`.
 	Subject string `json:"subject,omitempty"`
 	// Body is the body of the DRY commit message, excluding the subject line, i.e. `git show --format=%b`.

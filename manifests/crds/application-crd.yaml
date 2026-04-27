@@ -1818,6 +1818,14 @@ spec:
                     required:
                     - targetBranch
                     type: object
+                  hydrationFormat:
+                    default: simple
+                    description: Hydrationformat specifies how the hydrated manifests
+                      are formatted before being committed to git
+                    enum:
+                    - simple
+                    - split
+                    type: string
                   syncSource:
                     description: SyncSource specifies where to sync hydrated manifests
                       from.
@@ -5605,6 +5613,14 @@ spec:
                             required:
                             - targetBranch
                             type: object
+                          hydrationFormat:
+                            default: simple
+                            description: Hydrationformat specifies how the hydrated
+                              manifests are formatted before being committed to git
+                            enum:
+                            - simple
+                            - split
+                            type: string
                           syncSource:
                             description: SyncSource specifies where to sync hydrated
                               manifests from.
@@ -6058,6 +6074,14 @@ spec:
                             required:
                             - targetBranch
                             type: object
+                          hydrationFormat:
+                            default: simple
+                            description: Hydrationformat specifies how the hydrated
+                              manifests are formatted before being committed to git
+                            enum:
+                            - simple
+                            - split
+                            type: string
                           syncSource:
                             description: SyncSource specifies where to sync hydrated
                               manifests from.

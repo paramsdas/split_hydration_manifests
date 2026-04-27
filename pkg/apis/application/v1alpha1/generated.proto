@@ -2602,6 +2602,12 @@ message SourceHydrator {
   // HydrateTo specifies an optional "staging" location to push hydrated manifests to. An external system would then
   // have to move manifests to the SyncSource, e.g. by pull request.
   optional HydrateTo hydrateTo = 3;
+
+  // Hydrationformat specifies how the hydrated manifests are formatted before being committed to git
+  //
+  // +kubebuilder:default:=simple
+  // +kubebuilder:validation:Enum=simple;split
+  optional string hydrationFormat = 4;
 }
 
 // SourceHydratorStatus contains information about the current state of source hydration

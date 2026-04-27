@@ -35,6 +35,8 @@ message PathDetails {
   repeated HydratedManifestDetails manifests = 2;
   // Commands contains the commands executed when hydrating the manifests.
   repeated string commands = 3;
+  // HydrationFormat specifies the type format of hydration.
+  string hydrationFormat = 4;
 }
 
 // ManifestDetails contains the hydrated manifests.

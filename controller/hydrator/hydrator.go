@@ -376,7 +376,14 @@ func (h *Hydrator) hydrate(logCtx *log.Entry, apps []*appv1.Application, project
 	logCtx = logCtx.WithFields(log.Fields{"drySha": targetRevision})
 	// De-dupe, if the drySha was already hydrated log a debug and return using the data from the last successful hydration run.
 	// We only inspect one app. If apps have been added/removed, that will be handled on the next DRY commit.
-	if apps[0].Status.SourceHydrator.LastSuccessfulOperation != nil && targetRevision == apps[0].Status.SourceHydrator.LastSuccessfulOperation.DrySHA {
+	alreadyHydrated := apps[0].Status.SourceHydrator.LastSuccessfulOperation != nil && targetRevision == apps[0].Status.SourceHydrator.LastSuccessfulOperation.DrySHA
+	for _, app := range apps {
+		if apps[0].Status.SourceHydrator.LastSuccessfulOperation != nil && app.Status.SourceHydrator.LastSuccessfulOperation.SourceHydrator.HydrationFormat != app.Spec.SourceHydrator.HydrationFormat {
+			alreadyHydrated = false
+			break
+		}
+	}
+	if alreadyHydrated {
 		logCtx.Debug("Skipping hydration since the DRY commit was already hydrated")
 		return targetRevision, apps[0].Status.SourceHydrator.LastSuccessfulOperation.HydratedSHA, nil, nil
 	}
@@ -499,9 +506,10 @@ func (h *Hydrator) getManifests(ctx context.Context, app *appv1.Application, tar
 	}
 
 	return resp.Revision, &commitclient.PathDetails{
-		Path:      app.Spec.SourceHydrator.SyncSource.Path,
-		Manifests: manifestDetails,
-		Commands:  resp.Commands,
+		Path:            app.Spec.SourceHydrator.SyncSource.Path,
+		Manifests:       manifestDetails,
+		Commands:        resp.Commands,
+		HydrationFormat: app.Spec.SourceHydrator.HydrationFormat,
 	}, nil
 }
 
@@ -517,10 +525,8 @@ func (h *Hydrator) getRevisionMetadata(ctx context.Context, repoURL, project, re
 	}
 	defer utilio.Close(closer)
 
-	resp, err := repoService.GetRevisionMetadata(context.Background(), &apiclient.RepoServerRevisionMetadataRequest{
-		Repo:     repo,
-		Revision: revision,
-	})
+	resp, err := repoService.GetRevisionMetadata(context.Background(), &apiclient.RepoServerRevisionMetadataRequest{Repo: repo,
+		Revision: revision})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get revision metadata: %w", err)
 	}
