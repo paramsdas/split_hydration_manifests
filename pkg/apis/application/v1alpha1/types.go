@@ -73,6 +73,16 @@ type Application struct {
 	Operation         *Operation                                             `json:"operation,omitempty" protobuf:"bytes,4,opt,name=operation"` // Application-only: not in ApplicationSet
 }
 
+func (a *Application) GetHydrationFormat() string {
+	hydrationFormat, exists := a.Annotations[AnnotationKeyHydrationFormat]
+	if exists {
+		if hydrationFormat == HydrationFormatSplit {
+			return HydrationFormatSplit
+		}
+	}
+	return HydrationFormatSimple
+}
+
 // ApplicationSpec represents desired application state. Contains link to repository with application definition and additional parameters link definition revision.
 type ApplicationSpec struct {
 	// Source is a reference to the location of the application's manifests or chart
@@ -403,8 +413,7 @@ const (
 	ApplicationSourceTypePlugin    ApplicationSourceType = "Plugin"
 )
 
-// Hydrationformat specifies how the hydrated manifests are formatted before being committed to git
-// type HydrationFormat string
+// type ApplicationHydrationFormat string
 
 const (
 	HydrationFormatSimple string = "simple"
@@ -421,11 +430,6 @@ type SourceHydrator struct {
 	// HydrateTo specifies an optional "staging" location to push hydrated manifests to. An external system would then
 	// have to move manifests to the SyncSource, e.g. by pull request.
 	HydrateTo *HydrateTo `json:"hydrateTo,omitempty" protobuf:"bytes,3,opt,name=hydrateTo"`
-	// Hydrationformat specifies how the hydrated manifests are formatted before being committed to git
-	//
-	//+kubebuilder:default:=simple
-	//+kubebuilder:validation:Enum=simple;split
-	HydrationFormat string `json:"hydrationFormat,omitempty" protobuf:"bytes,4,opt,name=hydrationFormat"`
 }
 
 // GetSyncSource gets the source from which we should sync when a source hydrator is configured.
@@ -1264,6 +1268,8 @@ type HydrateOperation struct {
 	HydratedSHA string `json:"hydratedSHA,omitempty" protobuf:"bytes,6,opt,name=hydratedSHA"`
 	// SourceHydrator holds the hydrator config used for the hydrate operation
 	SourceHydrator SourceHydrator `json:"sourceHydrator,omitempty" protobuf:"bytes,7,opt,name=sourceHydrator"`
+	// HydrationFormat holds the hydration format for the hydrate operation
+	HydrationFormat string `json:"hydrationFormat,omitempty" protobuf:"bytes,8,opt,name=hydrationFormat"`
 }
 
 // SuccessfulHydrateOperation contains information about the most recent successful hydrate operation
@@ -1274,6 +1280,8 @@ type SuccessfulHydrateOperation struct {
 	HydratedSHA string `json:"hydratedSHA,omitempty" protobuf:"bytes,6,opt,name=hydratedSHA"`
 	// SourceHydrator holds the hydrator config used for the hydrate operation
 	SourceHydrator SourceHydrator `json:"sourceHydrator,omitempty" protobuf:"bytes,7,opt,name=sourceHydrator"`
+	// HydrationFormat holds the hydration format for the hydrate operation
+	HydrationFormat string `json:"hydrationFormat,omitempty" protobuf:"bytes,8,opt,name=hydrationFormat"`
 }
 
 // HydrateOperationPhase indicates the status of a hydrate operation

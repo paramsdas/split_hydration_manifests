@@ -628,12 +628,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -1542,12 +1536,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -2457,12 +2445,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -3350,12 +3332,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -4268,12 +4244,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -5182,12 +5152,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -6097,12 +6061,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -6990,12 +6948,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -7891,12 +7843,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -9019,12 +8965,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -10144,12 +10084,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -11054,12 +10988,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -11974,12 +11902,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -12888,12 +12810,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -13803,12 +13719,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -14696,12 +14606,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -15597,12 +15501,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -16725,12 +16623,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -17850,12 +17742,6 @@ spec:
                                                 required:
                                                 - targetBranch
                                                 type: object
-                                              hydrationFormat:
-                                                default: simple
-                                                enum:
-                                                - simple
-                                                - split
-                                                type: string
                                               syncSource:
                                                 properties:
                                                   path:
@@ -18764,12 +18650,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -19664,12 +19544,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -20792,12 +20666,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -21917,12 +21785,6 @@ spec:
                                       required:
                                       - targetBranch
                                       type: object
-                                    hydrationFormat:
-                                      default: simple
-                                      enum:
-                                      - simple
-                                      - split
-                                      type: string
                                     syncSource:
                                       properties:
                                         path:
@@ -22904,12 +22766,6 @@ spec:
                             required:
                             - targetBranch
                             type: object
-                          hydrationFormat:
-                            default: simple
-                            enum:
-                            - simple
-                            - split
-                            type: string
                           syncSource:
                             properties:
                               path:

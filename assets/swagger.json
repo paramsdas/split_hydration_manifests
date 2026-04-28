@@ -8781,6 +8781,10 @@
           "type": "string",
           "title": "HydratedSHA holds the resolved revision (sha) of the hydrated source as of the most recent reconciliation"
         },
+        "hydrationFormat": {
+          "type": "string",
+          "title": "HydrationFormat holds the hydration format for the hydrate operation"
+        },
         "message": {
           "type": "string",
           "title": "Message contains a message describing the current status of the hydrate operation"
@@ -10620,11 +10624,6 @@
         "hydrateTo": {
           "$ref": "#/definitions/v1alpha1HydrateTo"
         },
-        "hydrationFormat": {
-          "description": "+kubebuilder:default:=simple\n+kubebuilder:validation:Enum=simple;split",
-          "type": "string",
-          "title": "Hydrationformat specifies how the hydrated manifests are formatted before being committed to git"
-        },
         "syncSource": {
           "$ref": "#/definitions/v1alpha1SyncSource"
         }
@@ -10653,6 +10652,10 @@
         "hydratedSHA": {
           "type": "string",
           "title": "HydratedSHA holds the resolved revision (sha) of the hydrated source as of the most recent reconciliation"
+        },
+        "hydrationFormat": {
+          "type": "string",
+          "title": "HydrationFormat holds the hydration format for the hydrate operation"
         },
         "sourceHydrator": {
           "$ref": "#/definitions/v1alpha1SourceHydrator"

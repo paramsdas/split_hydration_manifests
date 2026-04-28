@@ -13,4 +13,6 @@ const (
 	AnnotationKeyManifestGeneratePaths = "argocd.argoproj.io/manifest-generate-paths"
 	// AnnotationKeyManagedByURL contains the URL of the Argo CD instance managing the application
 	AnnotationKeyManagedByURL = "argocd.argoproj.io/managed-by-url"
+	// AnnotationKeyHydrationFormat is the key for the annotation using which a use can configure the hydration format while using the source hydrator
+	AnnotationKeyHydrationFormat = "argocd.argoproj.io/hydration-format"
 )

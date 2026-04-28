@@ -122,6 +122,7 @@ func (h *Hydrator) ProcessAppHydrateQueueItem(origApp *appv1.Application) {
 			FinishedAt:     nil,
 			Phase:          appv1.HydrateOperationPhaseHydrating,
 			SourceHydrator: *app.Spec.SourceHydrator,
+			HydrationFormat: app.GetHydrationFormat(),
 		}
 	}
 
@@ -246,12 +247,14 @@ func (h *Hydrator) ProcessHydrationQueueItem(hydrationKey types.HydrationQueueKe
 			DrySHA:         drySHA,
 			HydratedSHA:    hydratedSHA,
 			SourceHydrator: app.Status.SourceHydrator.CurrentOperation.SourceHydrator,
+			HydrationFormat: app.GetHydrationFormat(),
 		}
 		app.Status.SourceHydrator.CurrentOperation = operation
 		app.Status.SourceHydrator.LastSuccessfulOperation = &appv1.SuccessfulHydrateOperation{
 			DrySHA:         drySHA,
 			HydratedSHA:    hydratedSHA,
 			SourceHydrator: app.Status.SourceHydrator.CurrentOperation.SourceHydrator,
+			HydrationFormat: app.GetHydrationFormat(),
 		}
 		h.dependencies.PersistHydrationStatus(origApp, &app.Status.SourceHydrator)
 
@@ -378,7 +381,7 @@ func (h *Hydrator) hydrate(logCtx *log.Entry, apps []*appv1.Application, project
 	// We only inspect one app. If apps have been added/removed, that will be handled on the next DRY commit.
 	alreadyHydrated := apps[0].Status.SourceHydrator.LastSuccessfulOperation != nil && targetRevision == apps[0].Status.SourceHydrator.LastSuccessfulOperation.DrySHA
 	for _, app := range apps {
-		if apps[0].Status.SourceHydrator.LastSuccessfulOperation != nil && app.Status.SourceHydrator.LastSuccessfulOperation.SourceHydrator.HydrationFormat != app.Spec.SourceHydrator.HydrationFormat {
+		if app.Status.SourceHydrator.LastSuccessfulOperation != nil && app.Status.SourceHydrator.LastSuccessfulOperation.HydrationFormat != app.GetHydrationFormat() {
 			alreadyHydrated = false
 			break
 		}
@@ -509,7 +512,7 @@ func (h *Hydrator) getManifests(ctx context.Context, app *appv1.Application, tar
 		Path:            app.Spec.SourceHydrator.SyncSource.Path,
 		Manifests:       manifestDetails,
 		Commands:        resp.Commands,
-		HydrationFormat: app.Spec.SourceHydrator.HydrationFormat,
+		HydrationFormat: app.GetHydrationFormat(),
 	}, nil
 }
 

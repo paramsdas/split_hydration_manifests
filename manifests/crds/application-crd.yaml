@@ -1818,14 +1818,6 @@ spec:
                     required:
                     - targetBranch
                     type: object
-                  hydrationFormat:
-                    default: simple
-                    description: Hydrationformat specifies how the hydrated manifests
-                      are formatted before being committed to git
-                    enum:
-                    - simple
-                    - split
-                    type: string
                   syncSource:
                     description: SyncSource specifies where to sync hydrated manifests
                       from.
@@ -5195,6 +5187,10 @@ spec:
                         description: HydratedSHA holds the resolved revision (sha)
                           of the hydrated source as of the most recent reconciliation
                         type: string
+                      hydrationFormat:
+                        description: HydrationFormat holds the hydration format for
+                          the hydrate operation
+                        type: string
                       message:
                         description: Message contains a message describing the current
                           status of the hydrate operation
@@ -5613,14 +5609,6 @@ spec:
                             required:
                             - targetBranch
                             type: object
-                          hydrationFormat:
-                            default: simple
-                            description: Hydrationformat specifies how the hydrated
-                              manifests are formatted before being committed to git
-                            enum:
-                            - simple
-                            - split
-                            type: string
                           syncSource:
                             description: SyncSource specifies where to sync hydrated
                               manifests from.
@@ -5666,6 +5654,10 @@ spec:
                       hydratedSHA:
                         description: HydratedSHA holds the resolved revision (sha)
                           of the hydrated source as of the most recent reconciliation
+                        type: string
+                      hydrationFormat:
+                        description: HydrationFormat holds the hydration format for
+                          the hydrate operation
                         type: string
                       sourceHydrator:
                         description: SourceHydrator holds the hydrator config used
@@ -6074,14 +6066,6 @@ spec:
                             required:
                             - targetBranch
                             type: object
-                          hydrationFormat:
-                            default: simple
-                            description: Hydrationformat specifies how the hydrated
-                              manifests are formatted before being committed to git
-                            enum:
-                            - simple
-                            - split
-                            type: string
                           syncSource:
                             description: SyncSource specifies where to sync hydrated
                               manifests from.
