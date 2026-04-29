@@ -368,6 +368,13 @@ const (
 	CacheVersion = "1.8.3"
 )
 
+// Constants used by the commit server 
+const (
+	HydrationFormatSimple = "simple"
+	HydrationFormatSplit = "split"
+	DefaultHydrationFormat = HydrationFormatSimple
+)
+
 // Constants used by util/clusterauth package
 const (
 	ClusterAuthRequestTimeout = 10 * time.Second

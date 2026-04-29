@@ -19,8 +19,8 @@ type ArgoCDCommitServer struct {
 }
 
 // NewServer returns a new instance of the commit server.
-func NewServer(gitCredsStore git.CredsStore, metricsServer *metrics.Server) *ArgoCDCommitServer {
-	return &ArgoCDCommitServer{commitService: commit.NewService(gitCredsStore, metricsServer)}
+func NewServer(gitCredsStore git.CredsStore, metricsServer *metrics.Server, hydrationFormat string) *ArgoCDCommitServer {
+	return &ArgoCDCommitServer{commitService: commit.NewService(gitCredsStore, metricsServer, hydrationFormat)}
 }
 
 // CreateGRPC creates a new gRPC server.

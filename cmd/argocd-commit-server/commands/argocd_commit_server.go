@@ -33,6 +33,7 @@ func NewCommand() *cobra.Command {
 		listenPort  int
 		metricsPort int
 		metricsHost string
+		hyrdrationFormat string
 	)
 	command := &cobra.Command{
 		Use:   common.CommandCommitServer,
@@ -57,7 +58,7 @@ func NewCommand() *cobra.Command {
 			askPassServer := askpass.NewServer(askpass.CommitServerSocketPath)
 			go func() { errors.CheckError(askPassServer.Run()) }()
 
-			server := commitserver.NewServer(askPassServer, metricsServer)
+			server := commitserver.NewServer(askPassServer, metricsServer, hyrdrationFormat)
 			grpc := server.CreateGRPC()
 			ctx := cmd.Context()
 
@@ -112,6 +113,7 @@ func NewCommand() *cobra.Command {
 	command.Flags().IntVar(&listenPort, "port", common.DefaultPortCommitServer, "Listen on given port for incoming connections")
 	command.Flags().StringVar(&metricsHost, "metrics-address", env.StringFromEnv("ARGOCD_COMMIT_SERVER_METRICS_LISTEN_ADDRESS", common.DefaultAddressCommitServerMetrics), "Listen on given address for metrics")
 	command.Flags().IntVar(&metricsPort, "metrics-port", common.DefaultPortCommitServerMetrics, "Start metrics server on given port")
+	command.Flags().StringVar(&hyrdrationFormat, "hydration-format", env.StringFromEnv("ARGOCD_COMMIT_SERVER_HYDRATION_FORMAT", common.DefaultHydrationFormat), "Set the hydration format. One of: simple|split")
 
 	return command
 }
