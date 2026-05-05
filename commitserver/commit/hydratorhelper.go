@@ -45,7 +45,7 @@ func init() {
 
 // WriteForPaths writes the manifests, hydrator.metadata, and README.md files for each path in the provided paths. It
 // also writes a root-level hydrator.metadata file containing the repo URL and dry SHA.
-func WriteForPaths(root *os.Root, repoUrl, drySha string, dryCommitMetadata *appv1.RevisionMetadata, paths []*apiclient.PathDetails, gitClient git.Client, hydrationFormat string) (bool, error) { //nolint:revive //FIXME(var-naming)
+func WriteForPaths(root *os.Root, repoUrl, drySha string, dryCommitMetadata *appv1.RevisionMetadata, paths []*apiclient.PathDetails, hydrationFormat string, gitClient git.Client) (bool, error) { //nolint:revive //FIXME(var-naming)
 	hydratorMetadata, err := hydrator.GetCommitMetadata(repoUrl, drySha, dryCommitMetadata)
 	if err != nil {
 		return false, fmt.Errorf("failed to retrieve hydrator metadata: %w", err)
@@ -83,6 +83,8 @@ func WriteForPaths(root *os.Root, repoUrl, drySha string, dryCommitMetadata *app
 			err = writeSplitManifests(root, hydratePath, p.Manifests)
 		} else if hydrationFormat == common.HydrationFormatSimple {
 			err = writeManifests(root, hydratePath, p.Manifests)
+		} else {
+			return false, fmt.Errorf("unknown hydrationFormat %s, valid values are 'simple' or 'split'", hydrationFormat)
 		}
 
 		if err != nil {

@@ -27,15 +27,13 @@ const (
 type Service struct {
 	metricsServer     *metrics.Server
 	repoClientFactory RepoClientFactory
-	hydrationFormat   string
 }
 
 // NewService returns a new instance of the commit service.
-func NewService(gitCredsStore git.CredsStore, metricsServer *metrics.Server, hydrationFormat string) *Service {
+func NewService(gitCredsStore git.CredsStore, metricsServer *metrics.Server) *Service {
 	return &Service{
 		metricsServer:     metricsServer,
 		repoClientFactory: NewRepoClientFactory(gitCredsStore, metricsServer),
-		hydrationFormat:   hydrationFormat,
 	}
 }
 
@@ -185,7 +183,7 @@ func (s *Service) handleCommitRequest(logCtx *log.Entry, r *apiclient.CommitHydr
 	3b. Else, hydrate the manifest.
 	3c. Push the updated note
 	*/
-	isHydrated, err := IsHydrated(gitClient, r.DrySha, hydratedSha, s.hydrationFormat)
+	isHydrated, err := IsHydrated(gitClient, r.DrySha, hydratedSha, r.HydrationFormat)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to get notes from git %w", err)
 	}
@@ -196,7 +194,7 @@ func (s *Service) handleCommitRequest(logCtx *log.Entry, r *apiclient.CommitHydr
 	}
 
 	logCtx.Debug("Writing manifests")
-	shouldCommit, err := WriteForPaths(root, r.Repo.Repo, r.DrySha, r.DryCommitMetadata, r.Paths, gitClient, s.hydrationFormat)
+	shouldCommit, err := WriteForPaths(root, r.Repo.Repo, r.DrySha, r.DryCommitMetadata, r.Paths, r.HydrationFormat, gitClient)
 	// When there are no new manifests to commit, err will be nil and success will be false as nothing to commit. Else or every other error err will not be nil
 	if err != nil {
 		return "", "", fmt.Errorf("failed to write manifests: %w", err)
@@ -205,7 +203,7 @@ func (s *Service) handleCommitRequest(logCtx *log.Entry, r *apiclient.CommitHydr
 		// Manifests did not change, so we don't need to create a new commit.
 		// Add a git note to track that this dry SHA has been processed, and return the existing hydrated SHA.
 		logCtx.Debug("Adding commit note")
-		err = AddNote(gitClient, r.DrySha, hydratedSha, s.hydrationFormat)
+		err = AddNote(gitClient, r.DrySha, hydratedSha, r.HydrationFormat)
 		if err != nil {
 			return "", "", fmt.Errorf("failed to add commit note: %w", err)
 		}
@@ -224,7 +222,7 @@ func (s *Service) handleCommitRequest(logCtx *log.Entry, r *apiclient.CommitHydr
 	}
 	// add the commit note
 	logCtx.Debug("Adding commit note")
-	err = AddNote(gitClient, r.DrySha, sha, s.hydrationFormat)
+	err = AddNote(gitClient, r.DrySha, sha, r.HydrationFormat)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to add commit note: %w", err)
 	}

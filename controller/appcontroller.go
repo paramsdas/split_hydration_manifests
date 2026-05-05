@@ -179,6 +179,7 @@ func NewApplicationController(
 	ignoreNormalizerOpts normalizers.IgnoreNormalizerOpts,
 	enableK8sEvent []string,
 	hydratorEnabled bool,
+	hydrationFormat string,
 ) (*ApplicationController, error) {
 	log.Infof("appResyncPeriod=%v, appHardResyncPeriod=%v, appResyncJitter=%v", appResyncPeriod, appHardResyncPeriod, appResyncJitter)
 	db := db.NewDB(namespace, settingsMgr, kubeClientset)
@@ -216,7 +217,7 @@ func NewApplicationController(
 		metricsClusterLabels:              metricsClusterLabels,
 	}
 	if hydratorEnabled {
-		ctrl.hydrator = hydrator.NewHydrator(&ctrl, appResyncPeriod, commitClientset, repoClientset, db)
+		ctrl.hydrator = hydrator.NewHydrator(&ctrl, appResyncPeriod, commitClientset, repoClientset, db, hydrationFormat)
 	}
 	if kubectlParallelismLimit > 0 {
 		ctrl.kubectlSemaphore = semaphore.NewWeighted(kubectlParallelismLimit)
