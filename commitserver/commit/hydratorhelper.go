@@ -91,7 +91,7 @@ func WriteForPaths(root *os.Root, repoUrl, drySha string, dryCommitMetadata *app
 			return false, fmt.Errorf("failed to write manifests: %w", err)
 		}
 		// Check if the manifest file has been modified compared to the git index
-		changed, err := gitClient.FileOrPathHasChanges(hydratePath)
+		changed, err := gitClient.PathHasChanges(hydratePath)
 		if err != nil {
 			return false, fmt.Errorf("failed to check if anything changed on the manifest: %w", err)
 		}

@@ -153,8 +153,8 @@ type Client interface {
 	GetCommitNote(sha string, namespace string) (string, error)
 	// AddAndPushNote adds a note to a DRY sha and then pushes it.
 	AddAndPushNote(sha string, namespace string, note string) error
-	// FileOrPathHasChanges checks whether there are changes from a git perspective for the given path. The path can either point to a file or a directory.
-	FileOrPathHasChanges(filePath string) (bool, error)
+	// PathHasChanges checks whether there are changes from a git perspective for the given path. The path can either point to a file or a directory.
+	PathHasChanges(filePath string) (bool, error)
 }
 
 type EventHandlers struct {
@@ -1226,8 +1226,8 @@ func (m *nativeGitClient) AddAndPushNote(sha string, namespace string, note stri
 	return nil
 }
 
-// FileOrPathHasChanges checks whether there are changes from a git perspective for the given path. The path can either point to a file or a directory.
-func (m *nativeGitClient) FileOrPathHasChanges(filePath string) (bool, error) {
+// PathHasChanges checks whether there are changes from a git perspective for the given path. The path can either point to a file or a directory.
+func (m *nativeGitClient) PathHasChanges(filePath string) (bool, error) {
 	// check whether there are any untracked changes at the given path
 	_, err := m.runCmd(context.Background(), "ls-files", "--error-unmatch", "--others", filePath)
 	if err == nil {

@@ -619,66 +619,6 @@ func (_c *Client_GetCommitNote_Call) RunAndReturn(run func(sha string, namespace
 	return _c
 }
 
-// HasFileChanged provides a mock function for the type Client
-func (_mock *Client) HasFileChanged(filePath string) (bool, error) {
-	ret := _mock.Called(filePath)
-
-	if len(ret) == 0 {
-		panic("no return value specified for HasFileChanged")
-	}
-
-	var r0 bool
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (bool, error)); ok {
-		return returnFunc(filePath)
-	}
-	if returnFunc, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = returnFunc(filePath)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(filePath)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// Client_HasFileChanged_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'HasFileChanged'
-type Client_HasFileChanged_Call struct {
-	*mock.Call
-}
-
-// HasFileChanged is a helper method to define mock.On call
-//   - filePath string
-func (_e *Client_Expecter) HasFileChanged(filePath interface{}) *Client_HasFileChanged_Call {
-	return &Client_HasFileChanged_Call{Call: _e.mock.On("HasFileChanged", filePath)}
-}
-
-func (_c *Client_HasFileChanged_Call) Run(run func(filePath string)) *Client_HasFileChanged_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
-		if args[0] != nil {
-			arg0 = args[0].(string)
-		}
-		run(
-			arg0,
-		)
-	})
-	return _c
-}
-
-func (_c *Client_HasFileChanged_Call) Return(b bool, err error) *Client_HasFileChanged_Call {
-	_c.Call.Return(b, err)
-	return _c
-}
-
-func (_c *Client_HasFileChanged_Call) RunAndReturn(run func(filePath string) (bool, error)) *Client_HasFileChanged_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // Init provides a mock function for the type Client
 func (_mock *Client) Init() error {
 	ret := _mock.Called()
@@ -1059,6 +999,66 @@ func (_c *Client_LsRemote_Call) Return(s string, err error) *Client_LsRemote_Cal
 }
 
 func (_c *Client_LsRemote_Call) RunAndReturn(run func(revision string) (string, error)) *Client_LsRemote_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// PathHasChanges provides a mock function for the type Client
+func (_mock *Client) PathHasChanges(filePath string) (bool, error) {
+	ret := _mock.Called(filePath)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PathHasChanges")
+	}
+
+	var r0 bool
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(string) (bool, error)); ok {
+		return returnFunc(filePath)
+	}
+	if returnFunc, ok := ret.Get(0).(func(string) bool); ok {
+		r0 = returnFunc(filePath)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
+		r1 = returnFunc(filePath)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// Client_PathHasChanges_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PathHasChanges'
+type Client_PathHasChanges_Call struct {
+	*mock.Call
+}
+
+// PathHasChanges is a helper method to define mock.On call
+//   - filePath string
+func (_e *Client_Expecter) PathHasChanges(filePath interface{}) *Client_PathHasChanges_Call {
+	return &Client_PathHasChanges_Call{Call: _e.mock.On("PathHasChanges", filePath)}
+}
+
+func (_c *Client_PathHasChanges_Call) Run(run func(filePath string)) *Client_PathHasChanges_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *Client_PathHasChanges_Call) Return(b bool, err error) *Client_PathHasChanges_Call {
+	_c.Call.Return(b, err)
+	return _c
+}
+
+func (_c *Client_PathHasChanges_Call) RunAndReturn(run func(filePath string) (bool, error)) *Client_PathHasChanges_Call {
 	_c.Call.Return(run)
 	return _c
 }
