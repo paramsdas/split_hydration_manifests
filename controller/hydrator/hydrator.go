@@ -85,18 +85,20 @@ type Hydrator struct {
 	commitClientset      commitclient.Clientset
 	repoClientset        apiclient.Clientset
 	repoGetter           RepoGetter
+	hydrationFormat      string
 }
 
 // NewHydrator creates a new Hydrator instance with the given dependencies, status refresh timeout, commit clientset,
 // repo clientset, and repo getter. The refresh timeout determines how often the hydrator checks if an application
 // needs to be hydrated.
-func NewHydrator(dependencies Dependencies, statusRefreshTimeout time.Duration, commitClientset commitclient.Clientset, repoClientset apiclient.Clientset, repoGetter RepoGetter) *Hydrator {
+func NewHydrator(dependencies Dependencies, statusRefreshTimeout time.Duration, commitClientset commitclient.Clientset, repoClientset apiclient.Clientset, repoGetter RepoGetter, hydrationFormat string) *Hydrator {
 	return &Hydrator{
 		dependencies:         dependencies,
 		statusRefreshTimeout: statusRefreshTimeout,
 		commitClientset:      commitClientset,
 		repoClientset:        repoClientset,
 		repoGetter:           repoGetter,
+		hydrationFormat:      hydrationFormat,
 	}
 }
 
@@ -239,19 +241,21 @@ func (h *Hydrator) ProcessHydrationQueueItem(hydrationKey types.HydrationQueueKe
 	for _, app := range apps {
 		origApp := app.DeepCopy()
 		operation := &appv1.HydrateOperation{
-			StartedAt:      app.Status.SourceHydrator.CurrentOperation.StartedAt,
-			FinishedAt:     &finishedAt,
-			Phase:          appv1.HydrateOperationPhaseHydrated,
-			Message:        "",
-			DrySHA:         drySHA,
-			HydratedSHA:    hydratedSHA,
-			SourceHydrator: app.Status.SourceHydrator.CurrentOperation.SourceHydrator,
+			StartedAt:       app.Status.SourceHydrator.CurrentOperation.StartedAt,
+			FinishedAt:      &finishedAt,
+			Phase:           appv1.HydrateOperationPhaseHydrated,
+			Message:         "",
+			DrySHA:          drySHA,
+			HydratedSHA:     hydratedSHA,
+			SourceHydrator:  app.Status.SourceHydrator.CurrentOperation.SourceHydrator,
+			HydrationFormat: h.hydrationFormat,
 		}
 		app.Status.SourceHydrator.CurrentOperation = operation
 		app.Status.SourceHydrator.LastSuccessfulOperation = &appv1.SuccessfulHydrateOperation{
-			DrySHA:         drySHA,
-			HydratedSHA:    hydratedSHA,
-			SourceHydrator: app.Status.SourceHydrator.CurrentOperation.SourceHydrator,
+			DrySHA:          drySHA,
+			HydratedSHA:     hydratedSHA,
+			SourceHydrator:  app.Status.SourceHydrator.CurrentOperation.SourceHydrator,
+			HydrationFormat: h.hydrationFormat,
 		}
 		h.dependencies.PersistHydrationStatus(origApp, &app.Status.SourceHydrator)
 
@@ -376,7 +380,9 @@ func (h *Hydrator) hydrate(logCtx *log.Entry, apps []*appv1.Application, project
 	logCtx = logCtx.WithFields(log.Fields{"drySha": targetRevision})
 	// De-dupe, if the drySha was already hydrated log a debug and return using the data from the last successful hydration run.
 	// We only inspect one app. If apps have been added/removed, that will be handled on the next DRY commit.
-	if apps[0].Status.SourceHydrator.LastSuccessfulOperation != nil && targetRevision == apps[0].Status.SourceHydrator.LastSuccessfulOperation.DrySHA {
+	alreadyHydrated := apps[0].Status.SourceHydrator.LastSuccessfulOperation != nil && targetRevision == apps[0].Status.SourceHydrator.LastSuccessfulOperation.DrySHA
+	alreadyHydrated = alreadyHydrated && apps[0].Status.SourceHydrator.LastSuccessfulOperation.HydrationFormat == h.hydrationFormat
+	if alreadyHydrated {
 		logCtx.Debug("Skipping hydration since the DRY commit was already hydrated")
 		return targetRevision, apps[0].Status.SourceHydrator.LastSuccessfulOperation.HydratedSHA, nil, nil
 	}
@@ -458,6 +464,7 @@ func (h *Hydrator) hydrate(logCtx *log.Entry, apps []*appv1.Application, project
 		DryCommitMetadata: revisionMetadata,
 		AuthorName:        authorName,
 		AuthorEmail:       authorEmail,
+		HydrationFormat:   h.hydrationFormat,
 	}
 
 	closer, commitService, err := h.commitClientset.NewCommitServerClient()
