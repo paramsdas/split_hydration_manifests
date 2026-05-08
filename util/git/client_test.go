@@ -1407,7 +1407,7 @@ func Test_nativeGitClient_AddAndPushNote(t *testing.T) {
 	})
 }
 
-func Test_nativeGitClient_HasFileChanged(t *testing.T) {
+func Test_nativeGitClient_PathHasChanges(t *testing.T) {
 	ctx := t.Context()
 	tempDir, err := _createEmptyGitRepo(ctx)
 	require.NoError(t, err)
@@ -1445,21 +1445,21 @@ func Test_nativeGitClient_HasFileChanged(t *testing.T) {
 	require.NoError(t, err)
 
 	// Untracked file, should be reported as changed
-	changed, err := client.HasFileChanged(filePath)
+	changed, err := client.PathHasChanges(filePath)
 	require.NoError(t, err)
 	require.True(t, changed, "expected untracked file to be reported as changed")
 
 	// After commit, should NOT be changed
 	out, err = client.CommitAndPush(branch, "add sample.txt")
 	require.NoError(t, err, "error output: %s", out)
-	changed, err = client.HasFileChanged(filePath)
+	changed, err = client.PathHasChanges(filePath)
 	require.NoError(t, err)
 	require.False(t, changed, "expected committed file to not be changed")
 
 	// Modify the file should be reported as changed
 	err = os.WriteFile(filePath, []byte("modified content"), 0o644)
 	require.NoError(t, err)
-	changed, err = client.HasFileChanged(filePath)
+	changed, err = client.PathHasChanges(filePath)
 	require.NoError(t, err)
 	require.True(t, changed, "expected modified file to be reported as changed")
 }
